@@ -18,23 +18,24 @@ If you are using JavaScript or TypeScript, we recommend checking out [`veil-js`]
 
 ## Contents
 
-- Units and data types
-- Shares primer
-- Authentication
+- [Sending requests](#sending-requests)
+- [Units and data types](#units-and-data-types)
+- [Shares primer](#shares-primer)
+- [Authentication](#authentication)
 - Public endpoints
-    + `GET /markets`
-    + `GET /markets/:slug`
-    + `GET /markets/:slug/(long|short)/bids`
-    + `GET /markets/:slug/(long|short)/asks`
-    + `GET /markets/:slug/(long|short)/order_fills`
+    + [`GET /markets`](#get-markets)
+    + [`GET /markets/:slug`](#get-marketsslug)
+    + [`GET /markets/:slug/(long|short)/bids`](#get-marketssluglongshortbids-and-get-marketssluglongshortasks)
+    + [`GET /markets/:slug/(long|short)/asks`](#get-marketssluglongshortbids-and-get-marketssluglongshortasks)
+    + [`GET /markets/:slug/(long|short)/order_fills`](#get-marketssluglongshortorder_fills)
 - Authentication endpoints
-    + `POST /session_challenges`
-    + `POST /sessions`
+    + [`POST /session_challenges`](#post-session_challenges)
+    + [`POST /sessions`](#post-sessions)
 - Authenticated endpoints
-    + `GET /orders`
-    + `POST /quotes`
-    + `POST /orders`
-    + `DELETE /orders/:uid`
+    + [`GET /orders`](#get-orders)
+    + [`POST /quotes`](#post-quotes)
+    + [`POST /orders`](#post-orders)
+    + [`DELETE /orders/:uid`](#delete-ordersuid)
 
 ### Sending requests
 
