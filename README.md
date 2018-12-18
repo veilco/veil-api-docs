@@ -8,13 +8,13 @@ Veil is still in the early stages of development, and we expect the API to chang
 
 ## Questions?
 
-Join us on [Discord](https://discord.gg/aBfTCVU) or email us at `hello@veil.market`. If you have a recommendation about the API documentation, feel free to [open an issue](https://github.com/veilmarket/veil-api-docs/issues).
+Join us on [Discord](https://discord.gg/aBfTCVU) or email us at `hello@veil.market`. If you have a recommendation about the API documentation, feel free to [open an issue](https://github.com/veilco/veil-api-docs/issues).
 
 The Veil API is maintained by @gkaemmer, @mertcelebi, and @pfletcherhill.
 
 ## `veil-js`
 
-If you are using JavaScript or TypeScript, we recommend checking out [`veil-js`](https://github.com/veilmarket/veil-js). It's a thin wrapper around the API and automatically handles things such as authentication and signing orders.
+If you are using JavaScript or TypeScript, we recommend checking out [`veil-js`](https://github.com/veilco/veil-js). It's a thin wrapper around the API and automatically handles things such as authentication and signing orders.
 
 ## Contents
 
@@ -107,7 +107,7 @@ To sign a session challenge, you can sign any UTF-8 string containing its `uid`.
 
 To create a session, you pass the signature to the `POST /sessions` endpoint, which returns the `token`.
 
-For an example implementation of authentication, take a look at the [`authenticate` method of `veil-js`](https://github.com/veilmarket/veil-js/blob/master/src/Veil.ts).
+For an example implementation of authentication, take a look at the [`authenticate` method of `veil-js`](https://github.com/veilco/veil-js/blob/master/src/Veil.ts).
 
 ### Public endpoints
 
