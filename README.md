@@ -66,8 +66,8 @@ All successful requests will contain a `data` key at the root, whereas failing r
   }
   ```
     + `currency_amount` is denominated in wei (`10e-18 ETH`). Dividing by `10e18` gives us an ETH amount, `0.2293 ETH`.
-    + `price` is always an integer between 0 and 10000. Here, the price is `0.2293 ETH/SHARE`
-    + `token_amount` can be divided by `10e14` to give the number of shares, which in this case is exactly `1.00 SHARE`.
+    + `price` is always an integer between 0 and a market's number of ticks. Assuming 10000 ticks, the price here is `0.2293 ETH/SHARE`
+    + `token_amount` can be multiplied by a market's number of ticks to give a unit denominated in wei. Assuming 10000 ticks again, `token_amount` here corresponds to `1.00 SHARE` (meaning up to 1 ETH of payout).
     + Therefore, `currency_amount` (in ETH) is always equal to `price` multiplied by `token_amount`.
 - Lists are returned as pages, which have the following form:
   ```json
@@ -79,7 +79,7 @@ All successful requests will contain a `data` key at the root, whereas failing r
   }
   ```
 
-## Shares primer
+### Shares primer
 
 Veil markets are built on [Augur](https://docs.augur.net/) and inherit the basic mechanics of Augur shares and prices.
 
@@ -93,7 +93,24 @@ In scalar markets (e.g. "What will be the price of ETH at the end of 2018?"), th
 
 The price of a Veil share token is therefore always somewhere between 0 and 1 ETH per share, depending on what the market predicts that each token's payout will be.
 
-Share token prices are expressed as integers between 0 and 10000, where 10000 means 1 ETH/share. A token with a price of 6000 can be purchased for 0.6 ETH/share.
+Check out the [Guide to Augur Market Economics](https://medium.com/veil-blog/a-guide-to-augur-market-economics-16c66d956b6c) and the [Guide to the Veil order book](https://medium.com/veil-blog/off-chain-trading-with-augur-and-0x-e2f0c05db3bd) for more information about shares, share prices, and payouts in Veil markets.
+
+### Prices and amounts in scalar markets
+Yes/no markets always have 10000 ticks. This is an Augur standard, and means that prices between 0% and 100% are accurate to the nearest 0.01%.
+
+Scalar markets, however, have a unique number of ticks, depending on their bounds. Scalar markets' bounds are expressed in a different unit (often USD, in the case of "What will be the price of X in USD on Dec. 4?"). The bounds might be $12.31 and $18.02. If there were only 10000 prices between $12.31 and $18.02, the USD values corresponding to those prices would be in very odd steps of $0.000571. $12.32, for example, would actually not be a valid price from 0 to 10000. If you instead use 5710 ticks, then there is an integer price that corresponds to exactly $12.32, $12.33, and so on.
+
+In a market with `num_ticks = 5710`, a price of `2293` doesn't mean `0.2293 ETH/share`. Instead, it corresponds to a price of `2293/5710 = ~.4015 ETH/share`.
+
+**Note**: Always divide `price` by `num_ticks` to get the actual "share price" between 0 and 1.
+
+With a unique `num_ticks`, the unit on `token_amount` in scalar markets is also affected. In most places, when we say "1 SHARE" we really mean enough integer shares to have a "maximum payout" of 1 ETH. The "maximum payout" of a token is when its price is equal to `num_ticks`.
+
+So when `num_ticks` is a funky number like `5710`, a token amount of `100000000000000` corresponds to a different maximum payout than in a market with `10000` ticks. In other words, **don't trust raw token amounts.**
+
+**Note**: Always multiply `token_amount` by `num_ticks` to get an actual number of shares (or, in other words, a maximum payout).
+
+Note that the equality of `token_amount * price = currency_amount` still stands. That is the most important property of token amounts, prices, and currency amounts in all Veil markets.
 
 ### Authentication
 
@@ -102,7 +119,7 @@ Veil uses authentication tokens to restrict access to private methods (quote and
 Authorization: Bearer [TOKEN]
 ```
 
-To get a temporary authentication token, you must sign a unique, one-time "session challenge" using an ethereum address. The ethereum address you use must be [registered on Veil](https://kovan.veil.market). Session challenges can be created using the `POST /session_challenges` endpoint.
+To get a temporary authentication token, you must sign a unique, one-time "session challenge" using an ethereum address. The ethereum address you use must be [registered on Veil](https://app.veil.market). Session challenges can be created using the `POST /session_challenges` endpoint.
 
 To sign a session challenge, you can sign any UTF-8 string containing its `uid`. Signing is performed using the ethereum `eth_sign` standard.
 
