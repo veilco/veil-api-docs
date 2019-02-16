@@ -10,7 +10,7 @@ Veil is still in the early stages of development, and we expect the API to chang
 
 Join us on [Discord](https://discord.gg/aBfTCVU) or email us at `hello@veil.market`. If you have a recommendation about the API documentation, feel free to [open an issue](https://github.com/veilco/veil-api-docs/issues).
 
-The Veil API is maintained by @gkaemmer, @mertcelebi, and @pfletcherhill.
+The Veil API is maintained by [@gkaemmer](https://github.com/gkaemmer), [@mertcelebi](https://github.com/mertcelebi), and [@pfletcherhill](https://github.com/pfletcherhill).
 
 ## `veil-js`
 
@@ -23,25 +23,26 @@ If you are using JavaScript or TypeScript, we recommend checking out [`veil-js`]
 - [Shares primer](#shares-primer)
 - [Authentication](#authentication)
 - Public endpoints
-    + [`GET /markets`](#get-markets)
-    + [`GET /markets/:slug`](#get-marketsslug)
-    + [`GET /markets/:slug/(long|short)/bids`](#get-marketssluglongshortbids-and-get-marketssluglongshortasks)
-    + [`GET /markets/:slug/(long|short)/asks`](#get-marketssluglongshortbids-and-get-marketssluglongshortasks)
-    + [`GET /markets/:slug/(long|short)/order_fills`](#get-marketssluglongshortorder_fills)
+  - [`GET /markets`](#get-markets)
+  - [`GET /markets/:slug`](#get-marketsslug)
+  - [`GET /markets/:slug/(long|short)/bids`](#get-marketssluglongshortbids-and-get-marketssluglongshortasks)
+  - [`GET /markets/:slug/(long|short)/asks`](#get-marketssluglongshortbids-and-get-marketssluglongshortasks)
+  - [`GET /markets/:slug/(long|short)/order_fills`](#get-marketssluglongshortorder_fills)
 - Authentication endpoints
-    + [`POST /session_challenges`](#post-session_challenges)
-    + [`POST /sessions`](#post-sessions)
+  - [`POST /session_challenges`](#post-session_challenges)
+  - [`POST /sessions`](#post-sessions)
 - Authenticated endpoints
-    + [`GET /orders`](#get-orders)
-    + [`POST /quotes`](#post-quotes)
-    + [`POST /orders`](#post-orders)
-    + [`DELETE /orders/:uid`](#delete-ordersuid)
+  - [`GET /orders`](#get-orders)
+  - [`POST /quotes`](#post-quotes)
+  - [`POST /orders`](#post-orders)
+  - [`DELETE /orders/:uid`](#delete-ordersuid)
 
 ### Sending requests
 
 The API prefix is `https://api.kovan.veil.market/api/v1`. For example, to get all markets, you'd send a request to `https://api.kovan.veil.market/api/v1/markets`.
 
 All successful requests will contain a `data` key at the root, whereas failing requests will return an `error` key:
+
 ```json
 {
   "data": { "results": { ... }, ... }
@@ -56,7 +57,7 @@ All successful requests will contain a `data` key at the root, whereas failing r
 
 - Dates are returned as an integer number of milliseconds since the Unix epoch.
 - Numbers are returned as strings for precision.
-  + The length of a number depends on its type. Consider the following order:
+  - The length of a number depends on its type. Consider the following order:
   ```json
   {
     "currency_amount": "229300000000000000",
@@ -65,10 +66,10 @@ All successful requests will contain a `data` key at the root, whereas failing r
     ...
   }
   ```
-    + `currency_amount` is denominated in wei (`10e-18 ETH`). Dividing by `10e18` gives us an ETH amount, `0.2293 ETH`.
-    + `price` is always an integer between 0 and a market's number of ticks. Assuming 10000 ticks, the price here is `0.2293 ETH/SHARE`
-    + `token_amount` can be multiplied by a market's number of ticks to give a unit denominated in wei. Assuming 10000 ticks again, `token_amount` here corresponds to `1.00 SHARE` (meaning up to 1 ETH of payout).
-    + Therefore, `currency_amount` (in ETH) is always equal to `price` multiplied by `token_amount`.
+  - `currency_amount` is denominated in wei (`10e-18 ETH`). Dividing by `10e18` gives us an ETH amount, `0.2293 ETH`.
+  - `price` is always an integer between 0 and a market's number of ticks. Assuming 10000 ticks, the price here is `0.2293 ETH/SHARE`
+  - `token_amount` can be multiplied by a market's number of ticks to give a unit denominated in wei. Assuming 10000 ticks again, `token_amount` here corresponds to `1.00 SHARE` (meaning up to 1 ETH of payout).
+  - Therefore, `currency_amount` (in ETH) is always equal to `price` multiplied by `token_amount`.
 - Lists are returned as pages, which have the following form:
   ```json
   {
@@ -85,7 +86,7 @@ Veil markets are built on [Augur](https://docs.augur.net/) and inherit the basic
 
 A Veil market has two tokens: LONG and SHORT. By holding shares of LONG or SHORT tokens, you hold a "position" in the market. When the market ends, its LONG and SHORT shares are redeemable for ETH, with the rates depending on the market's result.
 
-In yes/no markets (e.g. "Will ETH be above $100 at the end of 2018?"), the payout goes entirely to one share token—LONG if the market resolves to "Yes" and SHORT if the market resolves to "No".
+In yes/no markets (e.g. "Will ETH be above \$100 at the end of 2018?"), the payout goes entirely to one share token—LONG if the market resolves to "Yes" and SHORT if the market resolves to "No".
 
 In scalar markets (e.g. "What will be the price of ETH at the end of 2018?"), the payout is split between LONG and SHORT tokens according to where the result (e.g. the price of ETH) falls within the market's "bounds" (set by `min_price` and `max_price`).
 
@@ -96,6 +97,7 @@ The price of a Veil share token is therefore always somewhere between 0 and 1 ET
 Check out the [Guide to Augur Market Economics](https://medium.com/veil-blog/a-guide-to-augur-market-economics-16c66d956b6c) and the [Guide to the Veil order book](https://medium.com/veil-blog/off-chain-trading-with-augur-and-0x-e2f0c05db3bd) for more information about shares, share prices, and payouts in Veil markets.
 
 ### Prices and amounts in scalar markets
+
 Yes/no markets always have 10000 ticks. This is an Augur standard, and means that prices between 0% and 100% are accurate to the nearest 0.01%.
 
 Scalar markets, however, have a unique number of ticks, depending on their bounds. Scalar markets' bounds are expressed in a different unit (often USD, in the case of "What will be the price of X in USD on Dec. 4?"). The bounds might be $12.31 and $18.02. If there were only 10000 prices between $12.31 and $18.02, the USD values corresponding to those prices would be in very odd steps of $0.000571. $12.32, for example, would actually not be a valid price from 0 to 10000. If you instead use 5710 ticks, then there is an integer price that corresponds to exactly $12.32, $12.33, and so on.
@@ -115,6 +117,7 @@ Note that the equality of `token_amount * price = currency_amount` still stands.
 ### Authentication
 
 Veil uses authentication tokens to restrict access to private methods (quote and order creation, order cancelation, etc.). The token is passed using the `Authorization` header as follows:
+
 ```
 Authorization: Bearer [TOKEN]
 ```
@@ -134,17 +137,20 @@ For an example implementation of authentication, take a look at the [`authentica
 Fetch a list of markets.
 
 #### Params
+
 - `status`: `open` or `resolved`. Filters markets by their status. If omitted, both open and resolved markets are returned.
 - `channel`: `btc`, `rep`, `zrx`, `gas`, `hash_rate`, or `memes`. Filters markets by the channel they're in.
 - `page`: An 0-based integer page number to request. A maximum of 10 markets are returned per page.
 
 #### Example
+
 `GET /markets?status=open&channel=zrx`:
+
 ```json
-{  
-  "data": {  
-    "results": [  
-      {  
+{
+  "data": {
+    "results": [
+      {
         "name": "What will be the price of ZRX in USD at 12am UTC on December 22, 2018?",
         "address": "0xcd301ba9478e42706e493d7a5c822f6e2d6c2111",
         "details": "Will resolve at the last trade price before midnight UTC on CryptoCompare.",
@@ -182,10 +188,13 @@ Fetch a list of markets.
 Fetch a single market using its "slug" (a relatively short human-readable identifier).
 
 #### Params
-*None*
+
+_None_
 
 #### Example
+
 `GET /markets/zrx-usd-2018-12-22`:
+
 ```json
 {
   "data": {
@@ -223,15 +232,18 @@ Fetch the bids (open buy orders) or asks (open sell orders) for a market. You ca
 Bids are sorted by price descending, and asks are sorted by price ascending, so you can get the spread of a market by comparing the first bid and first ask.
 
 #### Params
-*None*
+
+_None_
 
 #### Example
+
 `GET /markets/zrx-usd-2018-12-22/long/bids`
+
 ```json
-{  
-  "data": {  
-    "results": [  
-      {  
+{
+  "data": {
+    "results": [
+      {
         "token_amount": "100000000000000",
         "price": "5620"
       }
@@ -245,13 +257,16 @@ Bids are sorted by price descending, and asks are sorted by price ascending, so 
 
 ### `GET /markets/:slug/(long|short)/order_fills`
 
-Fetch the order fill history in a market for either LONG or SHORT tokens. 
+Fetch the order fill history in a market for either LONG or SHORT tokens.
 
 #### Params
-*None*
+
+_None_
 
 #### Example
+
 `GET /markets/zrx-usd-1-2019-01-01/long/order_fills`
+
 ```json
 {
   "data": {
@@ -288,10 +303,13 @@ Create a session challenge. The `uid` of the session challenge must be included 
 For more information, see [Authentication](#authentication).
 
 #### Params
-*None*
+
+_None_
 
 #### Example
+
 `POST /session_challenges`:
+
 ```json
 {
   "data": {
@@ -310,11 +328,13 @@ You must sign the challenge with an address that is already registered on Veil.
 For more information, see [Authentication](#authentication).
 
 #### Params
+
 - `challenge_uid`: The `uid` of the session challenge used to create this session.
 - `message`: Any message that contains the challenge's `uid`. For simplicity, this can just be the exact `uid`, unchanged. (This is used to give users more context when signing online.)
 - `signature`: The result of signing `message`. To obtain this value, call `eth_sign` with `message`. The signature should be in hexadecimal and prefixed with `0x` (the standard format is RSV, so make sure that your signature library is consistent).
 
 #### Example
+
 ```
 POST /sessions
 {
@@ -323,7 +343,9 @@ POST /sessions
   "signature": "0x4c19c7a293e5e85360c95fd539329cc654747cd781c2f17718ae67be3dfaf12c19070517a503d1f5797480f885a8867603cc7003d0ec6657b7cc6a511a5a64981c"
 }
 ```
+
 :
+
 ```json
 {
   "data": {
@@ -344,10 +366,14 @@ POST /sessions
 Requires authentication. Fetches all orders that you've created in a particular market, including orders that have been filled.
 
 #### Params
+
 - `market` (**required**): The slug of a market.
+- `status` (optional): Status of the order ("pending" | "open" | "filled" | "canceled" | "expired"). If not specified, all orders are returned.
 
 #### Example
+
 `GET /orders`:
+
 ```json
 {
   "data": {
@@ -368,7 +394,8 @@ Requires authentication. Fetches all orders that you've created in a particular 
         "currency_amount": "229300000000000000",
         "currency_amount_filled": "0",
         "post_only": false,
-        "market": null
+        "market": null,
+        fills: [...] // Order fills associated with the order
       },
       ...
     ],
@@ -384,14 +411,16 @@ Requires authentication. Fetches all orders that you've created in a particular 
 Requires authentication. Create a Veil quote, which is used to calculate fees and generate an unsigned 0x order, which is in turn required to create a Veil order.
 
 #### Params
+
 - `quote` (**required**): An object with the following fields:
-  + `side` (**required**): Either `"buy"` or `"sell"`
-  + `token` (**required**): The address of the token you wish to buy. Can be obtained from `market.long_token` or `market.short_token`.
-  + `token_amount` (**required**): The amount of `token` you wish to buy or sell. Note that this number is expressed as an integer shifted by 14 decimal places. To purchase "1 share" in a Veil market, you would set `token_amount` to `"100000000000000"`
-  + `price` (**required**): The price you wish to buy or sell at, expressed as an stringified integer greater than 0 and less than 10000.
-  + `type` (**required**): This must be `"limit"`. Support for market orders is on its way.
+  - `side` (**required**): Either `"buy"` or `"sell"`
+  - `token` (**required**): The address of the token you wish to buy. Can be obtained from `market.long_token` or `market.short_token`.
+  - `token_amount` (**required**): The amount of `token` you wish to buy or sell. Note that this number is expressed as an integer shifted by 14 decimal places. To purchase "1 share" in a Veil market, you would set `token_amount` to `"100000000000000"`
+  - `price` (**required**): The price you wish to buy or sell at, expressed as an stringified integer greater than 0 and less than 10000.
+  - `type` (**required**): This must be `"limit"`. Support for market orders is on its way.
 
 #### Example
+
 ```
 POST /quotes
 {
@@ -404,7 +433,9 @@ POST /quotes
   }
 }
 ```
+
 Example response:
+
 ```json
 {
   "uid": "5d93b874-bde1-4af1-b7af-ae726943f549",
@@ -444,11 +475,13 @@ Example response:
 Requires authentication. Creates an order using a generated quote. To call this method, you must first create a quote and sign the quote's `zero_ex_order`, which you then pass as an argument to this endpoint.
 
 #### Params
+
 - `order` (**required**): An object with the following fields:
-  + `zero_ex_order` (**required**): The **signed** 0x order.
-  + `quote_uid` (**required**): The `uid` of the quote that was used to create this order.
+  - `zero_ex_order` (**required**): The **signed** 0x order.
+  - `quote_uid` (**required**): The `uid` of the quote that was used to create this order.
 
 #### Example
+
 ```
 POST /orders
 {
@@ -473,7 +506,9 @@ POST /orders
   }
 }
 ```
+
 Example response:
+
 ```json
 {
   "uid": "77fb963c-6b78-48ce-b030-7a08246e1f9f",
@@ -500,10 +535,13 @@ Example response:
 Requires authentication. Cancels an order.
 
 #### Params
-*None*
+
+_None_
 
 #### Example
+
 `DELETE /orders/77fb963c-6b78-48ce-b030-7a08246e1f9f`:
+
 ```json
 {
   "uid": "77fb963c-6b78-48ce-b030-7a08246e1f9f",
@@ -522,5 +560,28 @@ Requires authentication. Cancels an order.
   "currency_amount_filled": "0",
   "post_only": false,
   "market": null
+}
+```
+
+### `GET /markets/:slug/balances`
+
+Requires authentication. Returns the market balances for the authenticated user.
+
+#### Params
+
+_None_
+
+#### Example
+
+`GET /markets/zrx-usd-1-2019-01-01/balances`:
+
+```json
+{
+  "long_balance": "10000000000000",
+  "long_balance_clean": "100000000000000000", // long_balance * market.num_ticks
+  "short_balance": "40000000000000",
+  "short_balance_clean": "400000000000000000", // short_balance * market.num_ticks
+  "veil_ether_balance": "200000000000000000",
+  "ether_balance": "200000000000000000"
 }
 ```
