@@ -416,7 +416,7 @@ Requires authentication. Create a Veil quote, which is used to calculate fees an
   - `side` (**required**): Either `"buy"` or `"sell"`
   - `token` (**required**): The address of the token you wish to buy. Can be obtained from `market.long_token` or `market.short_token`.
   - `token_amount` (**required**): The amount of `token` you wish to buy or sell. Note that this number is expressed as an integer shifted by 14 decimal places. To purchase "1 share" in a Veil market, you would set `token_amount` to `"100000000000000"`
-  - `price` (**required**): The price you wish to buy or sell at, expressed as an stringified integer greater than 0 and less than 10000.
+  - `price` (**required**): The price you wish to buy or sell at, expressed as an stringified integer greater than 0 and less than the market's `num_ticks`.
   - `type` (**required**): This must be `"limit"`. Support for market orders is on its way.
 
 #### Example
